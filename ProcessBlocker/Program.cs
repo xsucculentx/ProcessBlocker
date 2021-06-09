@@ -16,22 +16,29 @@ namespace ProcessBlocker
             Console.WriteLine($"ProcessBlocker v{Version}-{Branch}");
             Console.WriteLine("FOR BEST EXPERIENCE RUN WITH SUDO/ADMIN");
             Console.Write("Processing Config... ");
-            
-            if (OperatingSystem.IsWindows())
+            try
             {
-                ConfigFileData = File.ReadAllLines($@"C:\Users\{Environment.UserName}\.processblocker");
+                if (OperatingSystem.IsWindows())
+                {
+                    ConfigFileData = File.ReadAllLines($@"C:\Users\{Environment.UserName}\.processblocker");
+                }
+
+                if (OperatingSystem.IsLinux())
+                {
+                    ConfigFileData = File.ReadAllLines($@"/home/{Environment.UserName}/.config/processblocker");
+                }
+                else
+                {
+                    Console.Write("Done.\n");
+                    Console.WriteLine("Can't detect operating system.");
+                    Environment.Exit(1);
+                }
             }
-            if (OperatingSystem.IsLinux())
+            catch (Exception ex)
             {
-                ConfigFileData = File.ReadAllLines($@"/home/{Environment.UserName}/.config/processblocker");
+                Console.WriteLine("Oops! you don't have a config set up. Check the github for a guide!");
             }
-            else
-            {
-                Console.Write("Done.\n");
-                Console.WriteLine("Can't detect operating system.");
-                Environment.Exit(1);
-            }
-            
+
             Console.Write("Done.\n");
             
             BlockProcesses();
